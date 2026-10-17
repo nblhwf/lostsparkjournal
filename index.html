@@ -30,7 +30,21 @@ body{background:#f7f6f2;background-image:radial-gradient(#e8e5dd .65px,transpare
 .side-reminder strong{display:block;font:600 19px/1.35 'Fraunces',serif}
 .side-reminder p{font-size:11px;color:#85847a;margin:8px 0 0}
 .workspace{min-width:0}
-.topbar{display:none}
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
 .page{background:transparent;border:0;border-radius:0;padding:0;box-shadow:none;overflow:visible}
 .page:before{display:none}
 .hero{grid-template-columns:1fr auto;gap:24px;background:#eeece5;border:1px solid #e7e3da;border-radius:24px;padding:26px 30px;margin-bottom:18px;min-height:175px}
