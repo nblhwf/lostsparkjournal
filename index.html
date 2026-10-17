@@ -441,11 +441,33 @@ document.getElementById('googleAuth').addEventListener('click', async () => {
   }
 });
 
+
+let currentUser = null;
+
+function updateLoginButton(user) {
+  currentUser = user;
+
+  document.querySelectorAll('#openAuth, #openAuthMobile').forEach(button => {
+    if (!button) return;
+
+    if (user) {
+      button.textContent = '♡';
+      button.setAttribute('aria-label', 'Profil akun');
+      button.title = user.email || 'Profil akun';
+      button.classList.add('logged-in');
+    } else {
+      button.textContent = 'Masuk / Login';
+      button.setAttribute('aria-label', 'Masuk atau buat akun');
+      button.removeAttribute('title');
+      button.classList.remove('logged-in');
+    }
+  });
+}
+
 sb.auth.onAuthStateChange((event, session) => {
-  if (session) {
-    console.log('Pengguna berhasil login:', session.user.email);
-  }
+  updateLoginButton(session?.user || null);
 });
+
 
 function render(){renderTabs();const m=document.getElementById('main');m.innerHTML=tab==='home'?home():tab==='cek'?check():tab==='jurnal'?journal():tab==='memories'?memories():tab==='premium'?premium():plan();}
 function rerenderKeepScroll(){const y=window.scrollY;render();window.scrollTo(0,y)}
