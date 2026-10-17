@@ -204,7 +204,7 @@ function photoHTML(){const p=photoForDate();return `<div class="photo-frame ${p.
 
 
 
-function home(){
+function home() {
   const today = new Date().toLocaleDateString('en-US', {
     weekday: 'long',
     month: 'long',
@@ -216,9 +216,15 @@ function home(){
 
   const wins = typeof S.wins === 'string' ? S.wins : '';
 
-  return `
-    <section class="page landing">
+  const safeWins = String(wins)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
 
+  return `
+    <section class="page">
+
+      <!-- HERO -->
       <div class="hero">
         <div class="hero-copy">
           <p class="eyebrow">${today}</p>
@@ -230,6 +236,7 @@ function home(){
         </div>
       </div>
 
+      <!-- DAILY PROMPT -->
       <div class="home-welcome">
         <div class="daily-prompt">
           <p class="eyebrow">YOUR DAILY PAGE</p>
@@ -244,6 +251,7 @@ function home(){
         </div>
       </div>
 
+      <!-- CALENDAR AND PHOTO -->
       <div class="grid-two">
 
         <div class="card">
@@ -251,7 +259,7 @@ function home(){
             <span class="icon-chip">▦</span>
             Little calendar
           </div>
-          ${typeof calendarHTML === 'function' ? calendarHTML() : ''}
+          ${calendarHTML()}
         </div>
 
         <div class="card">
@@ -259,14 +267,17 @@ function home(){
             <span class="icon-chip">♡</span>
             A moment to keep
           </div>
-          ${typeof photoHTML === 'function' ? photoHTML() : ''}
-          <p class="muted">
+
+          ${photoHTML()}
+
+          <p class="muted" style="margin:12px 0 0">
             ${photoCount} ${photoCount === 1 ? 'photo' : 'photos'} saved
           </p>
         </div>
 
       </div>
 
+      <!-- LITTLE SPARKS AND LITTLE WINS -->
       <div class="home-extra">
 
         <!-- LITTLE SPARKS -->
@@ -276,26 +287,41 @@ function home(){
             Little Sparks
           </div>
 
-          <p class="spark-subtitle">
+          <p style="
+            color:var(--brown-2);
+            font-size:13px;
+            line-height:1.7;
+            margin:0 0 12px;
+          ">
             Small things that made today softer.
           </p>
 
           <div class="spark-item">
-            <span class="spark-icon">☕</span>
-            <div class="spark-copy">
-              <h4>A warm drink in the afternoon</h4>
-              <p>It doesn’t have to be a big thing.</p>
+            <span class="spark-star">☕</span>
+            <div style="min-width:0">
+              <p style="margin:0 0 4px;font-weight:600;font-size:13px">
+                A warm drink in the afternoon
+              </p>
+              <p class="muted" style="margin:0;line-height:1.7">
+                It doesn’t have to be a big thing.
+              </p>
             </div>
           </div>
 
           <div class="spark-item">
-            <span class="spark-icon">♫</span>
-            <div class="spark-copy">
-              <h4>A song that felt like a hug</h4>
+            <span class="spark-star">♫</span>
+            <div style="min-width:0">
+              <p style="margin:0;font-weight:600;font-size:13px">
+                A song that felt like a hug
+              </p>
             </div>
           </div>
 
-          <button class="btn light" data-go="spark">
+          <button
+            class="btn light"
+            data-go="spark"
+            style="margin-top:14px"
+          >
             Explore Little Sparks →
           </button>
         </div>
@@ -307,195 +333,53 @@ function home(){
             Little Wins
           </div>
 
-          <p class="wins-description">
+          <p style="
+            margin:12px 0 20px;
+            color:var(--brown-2);
+            font-size:13px;
+            line-height:1.8;
+          ">
             You don’t have to do something big to be proud of yourself.
           </p>
 
-          <label for="littleWinsText" class="wins-prompt">
+          <label
+            for="littleWinsText"
+            class="field-label"
+            style="font-size:13px;margin-bottom:10px"
+          >
             Today, I’m proud of myself for…
           </label>
 
           <textarea
             id="littleWinsText"
+            class="text-input"
             placeholder="Even if it was just getting through the day..."
-          >${String(wins).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
+            style="
+              display:block;
+              width:100%;
+              min-height:120px;
+              padding:13px;
+              border:1px solid var(--line);
+              border-radius:14px;
+              background:#fffefa;
+              color:var(--brown);
+              font:inherit;
+              font-size:13px;
+              line-height:1.8;
+              resize:vertical;
+            "
+          >${safeWins}</textarea>
 
-          <button class="btn" id="saveLittleWins">
+          <button
+            class="btn"
+            id="saveLittleWins"
+            style="margin-top:14px"
+          >
             Save my little win ♡
           </button>
         </div>
 
       </div>
-
-      <style>
-        .spark-subtitle {
-          color: var(--muted, #8b7b8e);
-          font-size: .9rem;
-          line-height: 1.7;
-          margin: 8px 0 20px;
-        }
-
-        .spark-item {
-          display: flex;
-          align-items: flex-start;
-          gap: 14px;
-          padding: 15px 0;
-          border-bottom: 1px solid rgba(170,135,175,.15);
-        }
-
-        .spark-item:last-of-type {
-          margin-bottom: 16px;
-        }
-
-        .spark-icon {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-shrink: 0;
-          width: 42px;
-          height: 42px;
-          border-radius: 14px;
-          background: #f7eef8;
-          font-size: 1.2rem;
-        }
-
-        .spark-copy {
-          min-width: 0;
-        }
-
-        .spark-copy h4 {
-          margin: 2px 0 6px;
-          font-size: .95rem;
-          line-height: 1.5;
-          font-weight: 600;
-        }
-
-        .spark-copy p {
-          margin: 0;
-          color: var(--muted, #8b7b8e);
-          font-size: .84rem;
-          line-height: 1.6;
-        }
-
-        .little-wins-card .wins-description {
-          margin: 14px 0 22px;
-          color: var(--muted, #8b7b8e);
-          font-size: .9rem;
-          line-height: 1.8;
-        }
-
-        .little-wins-card .wins-prompt {
-          display: block;
-          margin-bottom: 10px;
-          font-size: .95rem;
-          line-height: 1.7;
-          font-weight: 600;
-        }
-
-        .little-wins-card #littleWinsText {
-          display: block;
-          box-sizing: border-box;
-          width: 100%;
-          min-height: 110px;
-          padding: 14px;
-          border: 1px solid #eadfe8;
-          border-radius: 14px;
-          background: #ffffff;
-          color: #514653;
-          font: inherit;
-          line-height: 1.7;
-          resize: vertical;
-        }
-
-        .little-wins-card #littleWinsText::placeholder {
-          color: #a99ba9;
-          opacity: 1;
-        }
-
-        .little-wins-card #saveLittleWins {
-          margin-top: 14px;
-        }
-      </style>
-
-    </section>
-  `;
-}
-
-        .spark-item {
-          display: flex;
-          align-items: flex-start;
-          gap: 14px;
-          padding: 15px 0;
-          border-bottom: 1px solid rgba(170,135,175,.15);
-        }
-
-        .spark-item:last-of-type {
-          margin-bottom: 16px;
-        }
-
-        .spark-icon {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-shrink: 0;
-          width: 42px;
-          height: 42px;
-          border-radius: 14px;
-          background: #f7eef8;
-          font-size: 1.2rem;
-        }
-
-        .spark-copy {
-          min-width: 0;
-        }
-
-        .spark-copy h4 {
-          margin: 2px 0 6px;
-          font-size: .95rem;
-          line-height: 1.5;
-          font-weight: 600;
-        }
-
-        .spark-copy p {
-          margin: 0;
-          color: var(--muted, #8b7b8e);
-          font-size: .84rem;
-          line-height: 1.6;
-        }
-
-        .little-wins-card .wins-description {
-          margin: 14px 0 22px;
-          color: var(--muted, #8b7b8e);
-          font-size: .9rem;
-          line-height: 1.8;
-        }
-
-        .little-wins-card .wins-prompt {
-          display: block;
-          margin-bottom: 10px;
-          font-size: .95rem;
-          line-height: 1.7;
-          font-weight: 600;
-        }
-
-        .little-wins-card #littleWinsText {
-          display: block;
-          box-sizing: border-box;
-          width: 100%;
-          min-height: 110px;
-          padding: 14px;
-          border: 1px solid #e8dbea;
-          border-radius: 14px;
-          background: #fffaff;
-          font: inherit;
-          line-height: 1.7;
-          resize: vertical;
-        }
-
-        .little-wins-card #saveLittleWins {
-          margin-top: 14px;
-        }
-      </style>
 
     </section>
   `;
