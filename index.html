@@ -444,14 +444,22 @@ document.getElementById('googleAuth').addEventListener('click', async () => {
 
 let currentUser = null;
 
+
 function updateLoginButton(user) {
   currentUser = user;
 
   document.querySelectorAll('#openAuth, #openAuthMobile').forEach(button => {
-    if (!button) return;
-
     if (user) {
-      button.textContent = '♡';
+      const avatar =
+        user.user_metadata?.avatar_url ||
+        user.user_metadata?.picture;
+
+      if (avatar) {
+        button.innerHTML = `<img src="${avatar}" alt="Foto profil" style="width:32px;height:32px;border-radius:50%;object-fit:cover;vertical-align:middle;">`;
+      } else {
+        button.textContent = (user.email || 'A').charAt(0).toUpperCase();
+      }
+
       button.setAttribute('aria-label', 'Profil akun');
       button.title = user.email || 'Profil akun';
       button.classList.add('logged-in');
@@ -464,6 +472,7 @@ function updateLoginButton(user) {
   });
 }
 
+
 sb.auth.onAuthStateChange((event, session) => {
   updateLoginButton(session?.user || null);
 });
@@ -472,7 +481,48 @@ sb.auth.onAuthStateChange((event, session) => {
 function render(){renderTabs();const m=document.getElementById('main');m.innerHTML=tab==='home'?home():tab==='cek'?check():tab==='jurnal'?journal():tab==='memories'?memories():tab==='premium'?premium():plan();}
 function rerenderKeepScroll(){const y=window.scrollY;render();window.scrollTo(0,y)}
 function resizeImage(file){return new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>{const img=new Image();img.onload=()=>{const max=1000,scale=Math.min(1,max/Math.max(img.width,img.height)),canvas=document.createElement('canvas');canvas.width=Math.round(img.width*scale);canvas.height=Math.round(img.height*scale);canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);resolve(canvas.toDataURL('image/jpeg',.78))};img.onerror=reject;img.src=reader.result};reader.onerror=reject;reader.readAsDataURL(file)})}
-document.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;const d=b.dataset;if(b.id==='openAuth'||b.id==='openAuthMobile'){openAuth('login');return}if(b.id==='closeAuth'){closeAuth();return}if(d.authTab){setAuthMode(d.authTab);return}if(b.id==='premiumCheckout'||b.hasAttribute('data-premium-info')){openAuth('register');const status=document.getElementById('authStatus');status.textContent='Untuk membeli Premium, akun dan checkout perlu diaktifkan di backend terlebih dahulu. Tidak ada pembayaran yang diproses di pratinjau ini.';status.classList.add('show');return}if(d.tab){tab=d.tab;render();window.scrollTo(0,0);return}if(d.go){tab=d.go;render();window.scrollTo(0,0);return}if(d.date){selectedDate=d.date;mood=noteForDate().mood;render();return}if(d.month){monthCursor.setMonth(monthCursor.getMonth()+Number(d.month));rerenderKeepScroll();return}if(d.mood!=null){const n=noteForDate();n.mood=n.mood===Number(d.mood)?null:Number(d.mood);S.j[selectedDate]=n;save();rerenderKeepScroll();return}if(d.q!=null){S.a[Number(d.q)]=Number(d.v);save();rerenderKeepScroll();return}if(b.id==='printMemories'){window.print();return}if(b.id==='saveMonthlyReflection'){const y=monthCursor.getFullYear(),m=String(monthCursor.getMonth()+1).padStart(2,'0'),key=y+'-'+m;if(!S.monthlyReflections)S.monthlyReflections={};const text=document.getElementById('monthlyReflection').value.trim();if(text)S.monthlyReflections[key]=text;else delete S.monthlyReflections[key];save();const status=document.getElementById('reflectionStatus');if(status)status.textContent='Saved ♡';return}if(b.id==='resetCheck'){S.a=[];save();render();return}if(b.id==='choosePhoto'){document.getElementById('photoInput').click();return}if(b.id==='removePhoto'){if(confirm('Hapus foto untuk tanggal ini?')){delete S.photos[selectedDate];save();render()}return}if(b.id==='saveLittleWins'){const text=document.getElementById('littleWinsText').value.trim();if(!S.wins)S.wins={};if(text)S.wins[selectedDate]=text;else delete S.wins[selectedDate];save();render();return;}if(b.id==='saveJournal'){const text=document.getElementById('journalText').value.trim(),old=noteForDate();if(!text&&!old.mood){alert('Tulis satu kalimat atau pilih mood dulu ya.');return}S.j[selectedDate]={text,mood:old.mood};save();render();return}if(b.id==='addSpark'){const t=document.getElementById('sparkText').value.trim();if(!t)return;S.s.push({i:Date.now(),t});save();render();return}if(d.openNote){selectedDate=d.openNote;tab='jurnal';mood=noteForDate().mood;render();window.scrollTo(0,0);return}if(d.deleteNote){if(confirm('Hapus halaman ini?')){delete S.j[d.deleteNote];save();render()}return}if(d.deleteSpark!=null){S.s.splice(Number(d.deleteSpark),1);save();render();return}if(b.id==='wipe'&&confirm('Hapus semua catatan, foto, dan checklist yang tersimpan di browser ini? Ini tidak bisa dibatalkan.')){S={a:[],j:{},s:[],p:{},photos:{},wins:{},monthlyReflections:{}};save();render();return}});
+document.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;const d=b.dataset;
+if (b.id === 'openAuth' || b.id === 'openAuthMobile') {
+  if (currentUser) {
+    const oldMenu = document.getElementById('profileMenu');
+
+    if (oldMenu) {
+      oldMenu.remove();
+      return;
+    }
+
+    document.getElementById('profileMenu')?.remove();
+
+    const menu = document.createElement('div');
+    menu.id = 'profileMenu';
+    menu.style.cssText = 'position:fixed;top:80px;right:24px;z-index:9999;background:#fffaff;border:1px solid #eadbea;border-radius:18px;padding:20px;width:min(300px,calc(100vw - 40px));box-shadow:0 8px 30px #59405a20;color:#59465c;overflow-wrap:anywhere;';
+
+    menu.innerHTML = `
+      <p style="font-size:12px;margin:0 0 8px;color:#958399">SIGNED IN AS</p>
+      <p style="font-weight:600;margin:0 0 18px"></p>
+      <button id="profileLogout" type="button" style="width:100%;padding:11px;border:1px solid #eadbea;border-radius:12px;background:#f5e9f5;color:#59465c;cursor:pointer">Keluar / Logout</button>
+    `;
+
+    menu.querySelector('p:nth-of-type(2)').textContent = currentUser.email || 'Akun Google';
+    document.body.appendChild(menu);
+  } else {
+    openAuth('login');
+  }
+  return;
+}
+
+if (b.id === 'profileLogout') {
+  sb.auth.signOut().then(({ error }) => {
+    if (error) {
+      alert('Belum berhasil keluar: ' + error.message);
+      return;
+    }
+    document.getElementById('profileMenu')?.remove();
+    updateLoginButton(null);
+  });
+  return;
+}
+if(b.id==='closeAuth'){closeAuth();return}if(d.authTab){setAuthMode(d.authTab);return}if(b.id==='premiumCheckout'||b.hasAttribute('data-premium-info')){openAuth('register');const status=document.getElementById('authStatus');status.textContent='Untuk membeli Premium, akun dan checkout perlu diaktifkan di backend terlebih dahulu. Tidak ada pembayaran yang diproses di pratinjau ini.';status.classList.add('show');return}if(d.tab){tab=d.tab;render();window.scrollTo(0,0);return}if(d.go){tab=d.go;render();window.scrollTo(0,0);return}if(d.date){selectedDate=d.date;mood=noteForDate().mood;render();return}if(d.month){monthCursor.setMonth(monthCursor.getMonth()+Number(d.month));rerenderKeepScroll();return}if(d.mood!=null){const n=noteForDate();n.mood=n.mood===Number(d.mood)?null:Number(d.mood);S.j[selectedDate]=n;save();rerenderKeepScroll();return}if(d.q!=null){S.a[Number(d.q)]=Number(d.v);save();rerenderKeepScroll();return}if(b.id==='printMemories'){window.print();return}if(b.id==='saveMonthlyReflection'){const y=monthCursor.getFullYear(),m=String(monthCursor.getMonth()+1).padStart(2,'0'),key=y+'-'+m;if(!S.monthlyReflections)S.monthlyReflections={};const text=document.getElementById('monthlyReflection').value.trim();if(text)S.monthlyReflections[key]=text;else delete S.monthlyReflections[key];save();const status=document.getElementById('reflectionStatus');if(status)status.textContent='Saved ♡';return}if(b.id==='resetCheck'){S.a=[];save();render();return}if(b.id==='choosePhoto'){document.getElementById('photoInput').click();return}if(b.id==='removePhoto'){if(confirm('Hapus foto untuk tanggal ini?')){delete S.photos[selectedDate];save();render()}return}if(b.id==='saveLittleWins'){const text=document.getElementById('littleWinsText').value.trim();if(!S.wins)S.wins={};if(text)S.wins[selectedDate]=text;else delete S.wins[selectedDate];save();render();return;}if(b.id==='saveJournal'){const text=document.getElementById('journalText').value.trim(),old=noteForDate();if(!text&&!old.mood){alert('Tulis satu kalimat atau pilih mood dulu ya.');return}S.j[selectedDate]={text,mood:old.mood};save();render();return}if(b.id==='addSpark'){const t=document.getElementById('sparkText').value.trim();if(!t)return;S.s.push({i:Date.now(),t});save();render();return}if(d.openNote){selectedDate=d.openNote;tab='jurnal';mood=noteForDate().mood;render();window.scrollTo(0,0);return}if(d.deleteNote){if(confirm('Hapus halaman ini?')){delete S.j[d.deleteNote];save();render()}return}if(d.deleteSpark!=null){S.s.splice(Number(d.deleteSpark),1);save();render();return}if(b.id==='wipe'&&confirm('Hapus semua catatan, foto, dan checklist yang tersimpan di browser ini? Ini tidak bisa dibatalkan.')){S={a:[],j:{},s:[],p:{},photos:{},wins:{},monthlyReflections:{}};save();render();return}});
 document.addEventListener('change',async e=>{if(e.target.id==='photoInput'){const file=e.target.files&&e.target.files[0];if(!file)return;if(!file.type.startsWith('image/')){alert('Pilih file gambar ya.');return}try{const src=await resizeImage(file),old=photoForDate();S.photos[selectedDate]={src,caption:document.getElementById('photoCaption')?.value||old.caption||''};save();render()}catch(err){alert('Foto belum bisa diproses. Coba gambar lain ya.')}return}if(e.target.id==='photoCaption'){const p=photoForDate();p.caption=e.target.value;S.photos[selectedDate]=p;save();return}if(e.target.dataset.plan!=null){const i=Number(e.target.dataset.plan);if(!S.p[selectedDate])S.p[selectedDate]=[];S.p[selectedDate][i]=e.target.checked;save();rerenderKeepScroll()}});
 document.addEventListener('input',e=>{if(e.target.id==='photoCaption'){const p=photoForDate();p.caption=e.target.value;S.photos[selectedDate]=p;save();const cap=document.querySelector('.frame-caption');if(cap)cap.textContent=p.caption||'little moment ♡';}});
 updateDailyQuote();
