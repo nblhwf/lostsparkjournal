@@ -203,6 +203,7 @@ function photoHTML(){const p=photoForDate();return `<div class="photo-frame ${p.
 
 
 
+
 function home(){
   const today = new Date().toLocaleDateString('en-US', {
     weekday: 'long',
@@ -310,16 +311,13 @@ function home(){
             You don’t have to do something big to be proud of yourself.
           </p>
 
-          <label
-            for="littleWinsText"
-            class="wins-prompt"
-          >
+          <label for="littleWinsText" class="wins-prompt">
             Today, I’m proud of myself for…
           </label>
 
           <textarea
             id="littleWinsText"
-            placeholder="Write your little win here..."
+            placeholder="Even if it was just getting through the day..."
           >${String(wins).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
 
           <button class="btn" id="saveLittleWins">
@@ -336,6 +334,92 @@ function home(){
           line-height: 1.7;
           margin: 8px 0 20px;
         }
+
+        .spark-item {
+          display: flex;
+          align-items: flex-start;
+          gap: 14px;
+          padding: 15px 0;
+          border-bottom: 1px solid rgba(170,135,175,.15);
+        }
+
+        .spark-item:last-of-type {
+          margin-bottom: 16px;
+        }
+
+        .spark-icon {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+          width: 42px;
+          height: 42px;
+          border-radius: 14px;
+          background: #f7eef8;
+          font-size: 1.2rem;
+        }
+
+        .spark-copy {
+          min-width: 0;
+        }
+
+        .spark-copy h4 {
+          margin: 2px 0 6px;
+          font-size: .95rem;
+          line-height: 1.5;
+          font-weight: 600;
+        }
+
+        .spark-copy p {
+          margin: 0;
+          color: var(--muted, #8b7b8e);
+          font-size: .84rem;
+          line-height: 1.6;
+        }
+
+        .little-wins-card .wins-description {
+          margin: 14px 0 22px;
+          color: var(--muted, #8b7b8e);
+          font-size: .9rem;
+          line-height: 1.8;
+        }
+
+        .little-wins-card .wins-prompt {
+          display: block;
+          margin-bottom: 10px;
+          font-size: .95rem;
+          line-height: 1.7;
+          font-weight: 600;
+        }
+
+        .little-wins-card #littleWinsText {
+          display: block;
+          box-sizing: border-box;
+          width: 100%;
+          min-height: 110px;
+          padding: 14px;
+          border: 1px solid #eadfe8;
+          border-radius: 14px;
+          background: #ffffff;
+          color: #514653;
+          font: inherit;
+          line-height: 1.7;
+          resize: vertical;
+        }
+
+        .little-wins-card #littleWinsText::placeholder {
+          color: #a99ba9;
+          opacity: 1;
+        }
+
+        .little-wins-card #saveLittleWins {
+          margin-top: 14px;
+        }
+      </style>
+
+    </section>
+  `;
+}
 
         .spark-item {
           display: flex;
