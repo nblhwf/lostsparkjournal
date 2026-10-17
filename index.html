@@ -200,6 +200,7 @@ function renderTabs(){document.getElementById('tabs').innerHTML=T.map(t=>`<butto
 function calendarHTML(){const y=monthCursor.getFullYear(),m=monthCursor.getMonth(),first=new Date(y,m,1),start=(first.getDay()+6)%7,days=new Date(y,m+1,0).getDate(),prevDays=new Date(y,m,0).getDate();let cells='';for(let i=0;i<42;i++){let day,date,other=false;if(i<start){day=prevDays-start+i+1;date=localDate(new Date(y,m-1,day));other=true}else if(i>=start+days){day=i-(start+days)+1;date=localDate(new Date(y,m+1,day));other=true}else{day=i-start+1;date=localDate(new Date(y,m,day))}const hasNote=!!(S.j[date]&&S.j[date].text),hasPhoto=!!(S.photos[date]&&S.photos[date].src);cells+=`<button class="day ${other?'other':''} ${date===selectedDate?'selected':''} ${date===localDate(new Date())?'today':''}" data-date="${date}" aria-label="${prettyDate(date)}" aria-pressed="${date===selectedDate}">${day}${hasPhoto?'<span class="photo-dot">📷</span>':''}${hasNote?'<span class="dot"></span>':''}</button>`}return `<div class="calendar-head"><button class="icon-btn" data-month="-1" aria-label="Bulan sebelumnya">‹</button><div class="month-name">${new Date(y,m,1).toLocaleDateString('id-ID',{month:'long',year:'numeric'})}</div><button class="icon-btn" data-month="1" aria-label="Bulan berikutnya">›</button></div><div class="weekdays">${['Sen','Sel','Rab','Kam','Jum','Sab','Min'].map(x=>`<span>${x}</span>`).join('')}</div><div class="calendar-grid">${cells}</div><p class="selected-date">Dipilih: <b>${prettyDate(selectedDate)}</b> · 📷 ada foto &nbsp; • ada catatan</p>`}
 function photoHTML(){const p=photoForDate();return `<div class="photo-frame ${p.src?'has-photo':''}" id="photoFrame"><img id="photoPreview" alt="Foto kenangan tanggal ${esc(selectedDate)}" src="${p.src||''}"><div class="photo-placeholder"><span class="camera">📸</span><strong>Satu foto untuk hari ini</strong><span>Tambahkan momen kecil yang ingin kamu simpan.</span></div>${p.src?`<div class="frame-caption">${esc(p.caption||'little moment ♡')}</div>`:''}</div><input id="photoInput" type="file" accept="image/*" class="hidden"><label class="field-label" for="photoCaption">Caption kecil (opsional)</label><input class="text-input" id="photoCaption" maxlength="90" placeholder="misalnya: coffee, sunshine & me" value="${esc(p.caption||'')}"><div class="frame-actions"><button class="btn" id="choosePhoto">${p.src?'Ganti foto':'＋ Tambah foto'}</button>${p.src?'<button class="btn light" id="removePhoto">Hapus foto</button>':''}<span class="muted">Foto dikecilkan agar lebih hemat penyimpanan.</span></div>`}
 
+
 function home(){
   const today = new Date().toLocaleDateString('en-US', {
     weekday: 'long',
@@ -207,21 +208,117 @@ function home(){
     day: 'numeric'
   }).toUpperCase();
 
+  const allNotes = Object.values(S.j || {})
+    .filter(x => x && x.text).length;
+
+  const photoCount = Object.values(S.photos || {})
+    .filter(x => x && x.src).length;
+
+  const wins = S.wins || '';
+
   return `
     <section class="page landing">
+
       <div class="hero">
         <div class="hero-copy">
           <p class="eyebrow">${today}</p>
           <h2>A little space for you.</h2>
           <p>Take a breath. You can start exactly where you are.</p>
           <button class="btn" data-go="jurnal">
-            Explore your journal →
+            Write today's page →
           </button>
         </div>
       </div>
+
+      <div class="home-welcome">
+        <div class="daily-prompt">
+          <p class="eyebrow">YOUR DAILY PAGE</p>
+          <h3>How are you, really?</h3>
+          <p>
+            No need to have it all figured out.
+            Just leave a little room for what you feel.
+          </p>
+          <button class="btn light" data-go="jurnal">
+            Start writing →
+          </button>
+        </div>
+      </div>
+
+      <div class="grid-two">
+
+        <div class="card">
+          <div class="card-title">
+            <span class="icon-chip">▦</span>
+            Little calendar
+          </div>
+          ${typeof calendarHTML === 'function' ? calendarHTML() : ''}
+        </div>
+
+        <div class="card">
+          <div class="card-title">
+            <span class="icon-chip">♡</span>
+            A moment to keep
+          </div>
+          ${typeof photoHTML === 'function' ? photoHTML() : ''}
+          <p class="muted">
+            ${photoCount} ${photoCount === 1 ? 'photo' : 'photos'} saved
+          </p>
+        </div>
+
+      </div>
+
+      <div class="home-extra">
+
+        <div class="card">
+          <div class="card-title">
+            <span class="icon-chip">✦</span>
+            Little sparks
+          </div>
+          <p>
+            Small thoughts can become meaningful memories.
+            Give yourself a moment to write one down.
+          </p>
+          <button class="btn light" data-go="spark">
+            Explore Little Sparks →
+          </button>
+        </div>
+
+        <div class="card little-wins-card">
+          <div class="card-title">
+            <span class="icon-chip">♡</span>
+            Little Wins
+          </div>
+          <p>
+            What is one small thing you did today
+            that you want to give yourself credit for?
+          </p>
+          <textarea
+            id="littleWinsText"
+            placeholder="Today, I'm proud of myself for..."
+          >${String(wins).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
+          <button class="btn" id="saveLittleWins">
+            Save my little win
+          </button>
+        </div>
+
+      </div>
+
+      <div class="card home-summary">
+        <p class="eyebrow">YOUR JOURNEY</p>
+        <h3>Every little moment counts.</h3>
+        <p>
+          You have ${allNotes} journal ${allNotes === 1 ? 'entry' : 'entries'}
+          and ${photoCount} saved ${photoCount === 1 ? 'photo' : 'photos'}.
+        </p>
+        <button class="btn light" data-go="memories">
+          Visit My Memories →
+        </button>
+      </div>
+
     </section>
   `;
 }
+
 
 function journal(){const n=noteForDate();return `<section class="page"><p class="eyebrow">page ${selectedDate}</p><h2>Daily Pages ✍️</h2><p class="muted">Tulis apa pun yang ada di kepala. Nggak perlu rapi, nggak perlu sempurna.</p><div class="card yellow" style="margin-top:18px"><div class="card-title"><span class="icon-chip">🗓️</span>${prettyDate(selectedDate)}</div><label class="field-label">How are you feeling?</label><div class="moods">${M.map((x,i)=>`<button class="mood" data-mood="${i}" aria-pressed="${n.mood===i}">${x}</button>`).join('')}</div><label class="field-label" for="journalText">A little note to yourself</label><textarea class="diary-text" id="journalText" placeholder="Hari ini aku merasa…\n\nSatu hal yang ingin aku ingat…">${esc(n.text||'')}</textarea><div class="frame-actions"><button class="btn" id="saveJournal">Simpan halaman ♡</button><button class="btn light" data-go="home">Kembali ke journal</button></div></div><div class="section-head"><h3>Pages I’ve kept</h3><p>${Object.values(S.j).filter(x=>x&&x.text).length} halaman</p></div>${Object.keys(S.j).filter(d=>S.j[d]&&S.j[d].text).sort().reverse().map(d=>`<div class="entry"><small><span>${prettyDate(d,{day:'numeric',month:'short',year:'numeric'})} ${S.j[d].mood!=null?M[S.j[d].mood]:''}</span><button class="delete" data-delete-note="${d}">hapus</button></small><p>${esc(S.j[d].text)}</p></div>`).join('')||'<p class="empty">Belum ada halaman. Kamu bisa mulai dari satu kalimat saja.</p>'}</section>`}
 function check(){let h='<section class="page"><p class="eyebrow">a gentle check-in</p><h2>Spark Check 🌤</h2><p class="muted">Pilih jawaban yang paling sesuai dengan 2 minggu terakhir. Ini refleksi diri, bukan alat diagnosis.</p>';Q.forEach((q,i)=>{h+=`<div class="question"><p><b>${i+1}.</b> ${q}</p><div class="options">${A.map((a,k)=>`<button data-q="${i}" data-v="${k}" aria-pressed="${S.a[i]===k}">${a}</button>`).join('')}</div></div>`});let done=S.a.filter(x=>x!=null).length;h+=`<p class="muted">Terjawab ${done} dari ${Q.length} pertanyaan.</p>`;if(done===12){let n=S.a.reduce((a,b)=>a+b,0),l=n<=6?['🌱 Beban terasa ringan','Coba pertahankan hal-hal kecil yang membantu dan beri ruang untuk istirahat.']:n<=17?['🌤 Ada beberapa hal yang terasa berat','Bangun rutinitas kecil dan pilih satu hal yang terasa mungkin dilakukan.']:n<=26?['🌥 Kamu mungkin sedang cukup terbebani','Kurangi tekanan pada diri sendiri dan pertimbangkan berbagi cerita dengan orang tepercaya.']:['🌧 Kamu layak mendapat dukungan','Pertimbangkan menghubungi orang yang kamu percaya atau tenaga profesional, terutama jika perasaan ini terus berlangsung atau memburuk.'];h+=`<div class="result"><b>${l[0]}</b><p class="muted">Skor refleksi ${n} dari 36 — bukan diagnosis.</p><p>${l[1]}</p><button class="btn light" id="resetCheck">Isi ulang</button></div>`}h+='</section>';return h}
