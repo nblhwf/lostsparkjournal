@@ -202,6 +202,7 @@ function photoHTML(){const p=photoForDate();return `<div class="photo-frame ${p.
 
 
 
+
 function home(){
   const today = new Date().toLocaleDateString('en-US', {
     weekday: 'long',
@@ -217,7 +218,6 @@ function home(){
   return `
     <section class="page landing">
 
-      <!-- HERO / HALAMAN AWAL -->
       <div class="hero">
         <div class="hero-copy">
           <p class="eyebrow">${today}</p>
@@ -229,7 +229,6 @@ function home(){
         </div>
       </div>
 
-      <!-- DAILY PAGE -->
       <div class="home-welcome">
         <div class="daily-prompt">
           <p class="eyebrow">YOUR DAILY PAGE</p>
@@ -244,7 +243,6 @@ function home(){
         </div>
       </div>
 
-      <!-- CALENDAR DAN FOTO -->
       <div class="grid-two">
 
         <div class="card">
@@ -268,20 +266,22 @@ function home(){
 
       </div>
 
-      <!-- LITTLE SPARKS DAN LITTLE WINS -->
       <div class="home-extra">
 
+        <!-- LITTLE SPARKS -->
         <div class="card">
           <div class="card-title">
             <span class="icon-chip">✧</span>
             Little Sparks
           </div>
 
-          <p>Small things that made today softer.</p>
+          <p class="spark-subtitle">
+            Small things that made today softer.
+          </p>
 
           <div class="spark-item">
             <span class="spark-icon">☕</span>
-            <div>
+            <div class="spark-copy">
               <h4>A warm drink in the afternoon</h4>
               <p>It doesn’t have to be a big thing.</p>
             </div>
@@ -289,7 +289,7 @@ function home(){
 
           <div class="spark-item">
             <span class="spark-icon">♫</span>
-            <div>
+            <div class="spark-copy">
               <h4>A song that felt like a hug</h4>
             </div>
           </div>
@@ -299,32 +299,124 @@ function home(){
           </button>
         </div>
 
+        <!-- LITTLE WINS -->
         <div class="card little-wins-card">
           <div class="card-title">
             <span class="icon-chip">♡</span>
             Little Wins
           </div>
 
-          <p>
-            What is one small thing you did today
-            that you want to give yourself credit for?
+          <p class="wins-description">
+            You don’t have to do something big to be proud of yourself.
           </p>
+
+          <label
+            for="littleWinsText"
+            class="wins-prompt"
+          >
+            Today, I’m proud of myself for…
+          </label>
 
           <textarea
             id="littleWinsText"
-            placeholder="Today, I'm proud of myself for..."
+            placeholder="Write your little win here..."
           >${String(wins).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
 
           <button class="btn" id="saveLittleWins">
-            Save my little win
+            Save my little win ♡
           </button>
         </div>
 
       </div>
 
+      <style>
+        .spark-subtitle {
+          color: var(--muted, #8b7b8e);
+          font-size: .9rem;
+          line-height: 1.7;
+          margin: 8px 0 20px;
+        }
+
+        .spark-item {
+          display: flex;
+          align-items: flex-start;
+          gap: 14px;
+          padding: 15px 0;
+          border-bottom: 1px solid rgba(170,135,175,.15);
+        }
+
+        .spark-item:last-of-type {
+          margin-bottom: 16px;
+        }
+
+        .spark-icon {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+          width: 42px;
+          height: 42px;
+          border-radius: 14px;
+          background: #f7eef8;
+          font-size: 1.2rem;
+        }
+
+        .spark-copy {
+          min-width: 0;
+        }
+
+        .spark-copy h4 {
+          margin: 2px 0 6px;
+          font-size: .95rem;
+          line-height: 1.5;
+          font-weight: 600;
+        }
+
+        .spark-copy p {
+          margin: 0;
+          color: var(--muted, #8b7b8e);
+          font-size: .84rem;
+          line-height: 1.6;
+        }
+
+        .little-wins-card .wins-description {
+          margin: 14px 0 22px;
+          color: var(--muted, #8b7b8e);
+          font-size: .9rem;
+          line-height: 1.8;
+        }
+
+        .little-wins-card .wins-prompt {
+          display: block;
+          margin-bottom: 10px;
+          font-size: .95rem;
+          line-height: 1.7;
+          font-weight: 600;
+        }
+
+        .little-wins-card #littleWinsText {
+          display: block;
+          box-sizing: border-box;
+          width: 100%;
+          min-height: 110px;
+          padding: 14px;
+          border: 1px solid #e8dbea;
+          border-radius: 14px;
+          background: #fffaff;
+          font: inherit;
+          line-height: 1.7;
+          resize: vertical;
+        }
+
+        .little-wins-card #saveLittleWins {
+          margin-top: 14px;
+        }
+      </style>
+
     </section>
   `;
 }
+
 
 function journal(){const n=noteForDate();return `<section class="page"><p class="eyebrow">page ${selectedDate}</p><h2>Daily Pages ✍️</h2><p class="muted">Tulis apa pun yang ada di kepala. Nggak perlu rapi, nggak perlu sempurna.</p><div class="card yellow" style="margin-top:18px"><div class="card-title"><span class="icon-chip">🗓️</span>${prettyDate(selectedDate)}</div><label class="field-label">How are you feeling?</label><div class="moods">${M.map((x,i)=>`<button class="mood" data-mood="${i}" aria-pressed="${n.mood===i}">${x}</button>`).join('')}</div><label class="field-label" for="journalText">A little note to yourself</label><textarea class="diary-text" id="journalText" placeholder="Hari ini aku merasa…\n\nSatu hal yang ingin aku ingat…">${esc(n.text||'')}</textarea><div class="frame-actions"><button class="btn" id="saveJournal">Simpan halaman ♡</button><button class="btn light" data-go="home">Kembali ke journal</button></div></div><div class="section-head"><h3>Pages I’ve kept</h3><p>${Object.values(S.j).filter(x=>x&&x.text).length} halaman</p></div>${Object.keys(S.j).filter(d=>S.j[d]&&S.j[d].text).sort().reverse().map(d=>`<div class="entry"><small><span>${prettyDate(d,{day:'numeric',month:'short',year:'numeric'})} ${S.j[d].mood!=null?M[S.j[d].mood]:''}</span><button class="delete" data-delete-note="${d}">hapus</button></small><p>${esc(S.j[d].text)}</p></div>`).join('')||'<p class="empty">Belum ada halaman. Kamu bisa mulai dari satu kalimat saja.</p>'}</section>`}
 function check(){let h='<section class="page"><p class="eyebrow">a gentle check-in</p><h2>Spark Check 🌤</h2><p class="muted">Pilih jawaban yang paling sesuai dengan 2 minggu terakhir. Ini refleksi diri, bukan alat diagnosis.</p>';Q.forEach((q,i)=>{h+=`<div class="question"><p><b>${i+1}.</b> ${q}</p><div class="options">${A.map((a,k)=>`<button data-q="${i}" data-v="${k}" aria-pressed="${S.a[i]===k}">${a}</button>`).join('')}</div></div>`});let done=S.a.filter(x=>x!=null).length;h+=`<p class="muted">Terjawab ${done} dari ${Q.length} pertanyaan.</p>`;if(done===12){let n=S.a.reduce((a,b)=>a+b,0),l=n<=6?['🌱 Beban terasa ringan','Coba pertahankan hal-hal kecil yang membantu dan beri ruang untuk istirahat.']:n<=17?['🌤 Ada beberapa hal yang terasa berat','Bangun rutinitas kecil dan pilih satu hal yang terasa mungkin dilakukan.']:n<=26?['🌥 Kamu mungkin sedang cukup terbebani','Kurangi tekanan pada diri sendiri dan pertimbangkan berbagi cerita dengan orang tepercaya.']:['🌧 Kamu layak mendapat dukungan','Pertimbangkan menghubungi orang yang kamu percaya atau tenaga profesional, terutama jika perasaan ini terus berlangsung atau memburuk.'];h+=`<div class="result"><b>${l[0]}</b><p class="muted">Skor refleksi ${n} dari 36 — bukan diagnosis.</p><p>${l[1]}</p><button class="btn light" id="resetCheck">Isi ulang</button></div>`}h+='</section>';return h}
