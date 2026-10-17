@@ -265,6 +265,8 @@ textarea { display:block; max-width:100%; min-width:0; position:relative; z-inde
  </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
 <script>
 const Q=["Aku merasa lebih nggak tertarik sama hal-hal yang biasanya aku suka.","Aku merasa energiku lebih sedikit dari biasanya, bahkan untuk hal sederhana.","Aku sering menunda sesuatu karena semuanya terasa melelahkan.","Aku merasa sulit memulai hari atau sekadar membuat diriku bergerak.","Aku lebih sering scrolling, nonton, atau rebahan karena nggak tahu harus apa.","Aku merasa lebih jauh dari orang-orang di sekitarku atau ingin sendirian.","Aku merasa sulit fokus atau mengambil keputusan sederhana.","Aku merasa cuma menjalani hari tanpa benar-benar menikmatinya.","Hal-hal yang dulu aku tunggu-tunggu sekarang nggak terlalu membuatku excited.","Aku merasa stuck, kehilangan arah, atau nggak yakin sebenarnya aku mau apa.","Aku mulai mengabaikan rutinitas dasar seperti tidur, makan, mandi, atau keluar rumah.","Aku lebih sering menyalahkan diri sendiri karena merasa seharusnya bisa melakukan lebih banyak."];
 const DAILY_QUOTES=[['You don’t have to bloom every day.','Growing takes time. ♡'],['Rest is part of the process.','You’re allowed to pause. ♡'],['Small steps are still steps.','Slow progress is progress. ♡'],['You can begin again, gently.','There is no perfect timeline. ♡'],['You are allowed to take up space.','You matter, even on quiet days. ♡'],['Not every day has to be productive.','Being here is enough for today. ♡'],['Give yourself the kindness you give others.','You deserve that softness, too. ♡']];function updateDailyQuote(){const now=new Date();const dayNumber=Math.floor(Date.UTC(now.getFullYear(),now.getMonth(),now.getDate())/86400000);const quote=DAILY_QUOTES[((dayNumber%DAILY_QUOTES.length)+DAILY_QUOTES.length)%DAILY_QUOTES.length];const title=document.getElementById('dailyQuoteTitle');const text=document.getElementById('dailyQuoteText');if(title)title.textContent=quote[0];if(text)text.textContent=quote[1]}const A=["🌞 Tidak sama sekali","🌤 Sedikit","🌥 Cukup sering","🌧 Hampir setiap hari"],P=["Dapatkan sedikit cahaya","Makan + minum","Bergerak sedikit","Lakukan SATU hal yang diperlukan","Lakukan SATU hal yang menyenangkan","Terhubung dengan seseorang","Menenangkan diri sebelum istirahat"],M=["🌞","🌤","🌥","🌧"],T=[["home","My Journal"],["cek","Spark Check"],["jurnal","Daily Pages"],["plan","Gentle Plan"],["memories","My Memories"],["premium","Premium"]],KEY="lsj_scrapbook_v2";
@@ -319,14 +321,131 @@ function memories(){
 function premium(){return `<section class="page"><p class="eyebrow">A LITTLE EXTRA FOR YOUR JOURNEY</p><h2>Lost Spark Premium</h2><p class="muted">Ruang ekstra untuk merawat momen kecilmu, dengan tampilan dan prompt yang lebih personal.</p><div class="premium-lock"><div class="lock-icon" aria-hidden="true">⌑</div><div><span class="pill-lock">⌑ Premium terkunci</span><h3 style="margin-top:10px">Buka semua detail kecil yang istimewa</h3><p>Premium adalah pembayaran satu kali. Setelah pembayaran diverifikasi, akses tersimpan di akunmu secara permanen.</p><div class="premium-price">Rp15.000</div><div class="premium-sub">Harga peluncuran · sekali bayar · akses permanen</div><button class="premium-cta" id="premiumCheckout" style="margin-top:14px">Unlock Premium</button></div></div><div class="premium-grid"><article class="premium-tile"><div class="tile-icon">🎨</div><span class="pill-lock">⌑ Premium</span><h3 style="margin-top:12px">Tema visual Premium</h3><p>Palet warna lembut dan detail visual eksklusif untuk membuat ruang jurnal terasa lebih personal.</p><button class="secondary-cta" data-premium-info>Fitur terkunci</button></article><article class="premium-tile"><div class="tile-icon">✧</div><span class="pill-lock">⌑ Premium</span><h3 style="margin-top:12px">Self-Discovery</h3><p>Prompt untuk mengenali nilai hidup, kekuatan, kebutuhan, dan hal yang ingin kamu pahami tentang diri sendiri.</p><button class="secondary-cta" data-premium-info>Fitur terkunci</button></article><article class="premium-tile"><div class="tile-icon">🌱</div><span class="pill-lock">⌑ Premium</span><h3 style="margin-top:12px">Growth & Habits</h3><p>Template tujuan mingguan, kebiasaan kecil, dan refleksi progres tanpa tuntutan harus sempurna.</p><button class="secondary-cta" data-premium-info>Fitur terkunci</button></article><article class="premium-tile"><div class="tile-icon">♡</div><span class="pill-lock">⌑ Premium</span><h3 style="margin-top:12px">Emotional Reset</h3><p>Panduan menulis untuk membantu menata pikiran dan memahami perasaan saat hari terasa berat.</p><button class="secondary-cta" data-premium-info>Fitur terkunci</button></article><article class="premium-tile"><div class="tile-icon">☾</div><span class="pill-lock">⌑ Premium</span><h3 style="margin-top:12px">Monthly Reflection</h3><p>Evaluasi bulanan untuk melihat hal yang dipelajari, pencapaian kecil, tantangan, dan niat untuk bulan berikutnya.</p><button class="secondary-cta" data-premium-info>Fitur terkunci</button></article></div><p class="muted" style="margin-top:18px;font-size:12px">Status: pratinjau UI. Pembayaran, login, dan pemeriksaan hak akses belum aktif. Jangan anggap tombol ini sebagai transaksi sungguhan.</p></section>`}
 
 
-let authMode='login';
-function openAuth(mode='login'){setAuthMode(mode);document.getElementById('authOverlay').classList.add('open');document.body.style.overflow='hidden';setTimeout(()=>document.getElementById('authEmail').focus(),50)}
-function closeAuth(){document.getElementById('authOverlay').classList.remove('open');document.body.style.overflow=''}
-function setAuthMode(mode){authMode=mode;document.querySelectorAll('[data-auth-tab]').forEach(x=>{x.classList.toggle('active',x.dataset.authTab===mode)});const reg=mode==='register';document.getElementById('authTitle').textContent=reg?'Create your account.':'Your space, saved.';document.getElementById('authSubmit').textContent=reg?'Buat akun':'Masuk';document.getElementById('confirmPasswordWrap').hidden=!reg;document.getElementById('authPassword').autocomplete=reg?'new-password':'current-password';const status=document.getElementById('authStatus');status.textContent='Pratinjau desain saja. Login dan pendaftaran belum terhubung ke backend.';status.classList.add('show')}
-document.getElementById('authOverlay').addEventListener('click',e=>{if(e.target.id==='authOverlay')closeAuth()});
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeAuth()});
-document.getElementById('authForm').addEventListener('submit',e=>{e.preventDefault();const status=document.getElementById('authStatus');if(authMode==='register'&&document.getElementById('authPassword').value!==document.getElementById('authConfirmPassword').value){status.textContent='Konfirmasi password belum sama.';status.classList.add('show');return}status.textContent='Belum ada akun yang dibuat atau sesi login yang dimulai. Ini hanya pratinjau UI; backend autentikasi belum terpasang.';status.classList.add('show')});
-document.getElementById('googleAuth').addEventListener('click',()=>{const status=document.getElementById('authStatus');status.textContent='Login Google belum aktif. Tombol ini baru pratinjau tampilan; perlu konfigurasi OAuth Google dan backend autentikasi sebelum bisa digunakan.';status.classList.add('show')});
+
+const SUPABASE_URL = 'https://pyxsweuyytmqqohalxja.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_nPQUXGOfk8ChLzTg5e1sJQ_H53XxcxR';
+
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let authMode = 'login';
+
+function openAuth(mode = 'login') {
+  setAuthMode(mode);
+  document.getElementById('authOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => document.getElementById('authEmail').focus(), 50);
+}
+
+function closeAuth() {
+  document.getElementById('authOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function setAuthMode(mode) {
+  authMode = mode;
+
+  document.querySelectorAll('[data-auth-tab]').forEach(x => {
+    x.classList.toggle('active', x.dataset.authTab === mode);
+  });
+
+  const reg = mode === 'register';
+
+  document.getElementById('authTitle').textContent =
+    reg ? 'Create your account.' : 'Your space, saved.';
+
+  document.getElementById('authSubmit').textContent =
+    reg ? 'Buat akun' : 'Masuk';
+
+  document.getElementById('confirmPasswordWrap').hidden = !reg;
+  document.getElementById('authPassword').autocomplete =
+    reg ? 'new-password' : 'current-password';
+
+  const status = document.getElementById('authStatus');
+  status.textContent = '';
+  status.classList.remove('show');
+}
+
+document.getElementById('authOverlay').addEventListener('click', e => {
+  if (e.target.id === 'authOverlay') closeAuth();
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeAuth();
+});
+
+document.getElementById('authForm').addEventListener('submit', async e => {
+  e.preventDefault();
+
+  const status = document.getElementById('authStatus');
+  const email = document.getElementById('authEmail').value.trim();
+  const password = document.getElementById('authPassword').value;
+
+  if (
+    authMode === 'register' &&
+    password !== document.getElementById('authConfirmPassword').value
+  ) {
+    status.textContent = 'Konfirmasi password belum sama.';
+    status.classList.add('show');
+    return;
+  }
+
+  const submit = document.getElementById('authSubmit');
+  submit.disabled = true;
+  status.textContent = 'Sebentar ya...';
+  status.classList.add('show');
+
+  try {
+    const result = authMode === 'register'
+      ? await sb.auth.signUp({ email, password })
+      : await sb.auth.signInWithPassword({ email, password });
+
+    if (result.error) throw result.error;
+
+    if (authMode === 'register' && !result.data.session) {
+      status.textContent =
+        'Akun berhasil didaftarkan. Cek email untuk konfirmasi sebelum masuk.';
+      return;
+    }
+
+    status.textContent = 'Berhasil masuk ♡';
+    setTimeout(closeAuth, 700);
+
+  } catch (err) {
+    status.textContent =
+      err.message || 'Belum berhasil. Coba lagi ya.';
+    status.classList.add('show');
+  } finally {
+    submit.disabled = false;
+  }
+});
+
+document.getElementById('googleAuth').addEventListener('click', async () => {
+  const status = document.getElementById('authStatus');
+
+  status.textContent = 'Menghubungkan ke Google...';
+  status.classList.add('show');
+
+  try {
+    const { error } = await sb.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin
+      }
+    });
+
+    if (error) throw error;
+
+  } catch (err) {
+    status.textContent = err.message || 'Login Google belum berhasil.';
+    status.classList.add('show');
+  }
+});
+
+sb.auth.onAuthStateChange((event, session) => {
+  if (session) {
+    console.log('Pengguna berhasil login:', session.user.email);
+  }
+});
 
 function render(){renderTabs();const m=document.getElementById('main');m.innerHTML=tab==='home'?home():tab==='cek'?check():tab==='jurnal'?journal():tab==='memories'?memories():tab==='premium'?premium():plan();}
 function rerenderKeepScroll(){const y=window.scrollY;render();window.scrollTo(0,y)}
